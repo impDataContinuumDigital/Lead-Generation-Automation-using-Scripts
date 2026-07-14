@@ -1,0 +1,6 @@
+pandas
+gspread
+dnspython
+playwright
+requests
+beautifulsoup4
