@@ -26,6 +26,12 @@ def push_raw(csv_path: str):
     # skipping the header write. Checking row 1's actual content avoids that.
     if ws.row_values(1) != RAW_COLUMNS:
         ws.insert_row(RAW_COLUMNS, index=1, value_input_option="RAW")
+        last_col = chr(ord("A") + len(RAW_COLUMNS) - 1)
+        ws.format(f"A1:{last_col}1", {"textFormat": {"bold": True}})
+        # row 2 may carry stale bold formatting left over from before this
+        # sheet had a proper header -- reset it explicitly so it doesn't
+        # look like a second header.
+        ws.format(f"A2:{last_col}2", {"textFormat": {"bold": False}})
 
     rows = df[RAW_COLUMNS].fillna("").values.tolist()
     phone_idx = RAW_COLUMNS.index("phone")
@@ -34,10 +40,18 @@ def push_raw(csv_path: str):
             row[phone_idx] = "'" + str(row[phone_idx])  # force text, avoids formula parsing of leading "+"
 
     if rows:
+        existing_row_count = len(ws.get_all_values())
         # RAW (not USER_ENTERED) so values like "+1 737-510-4833" are
         # stored as literal text instead of Sheets trying to parse the
         # leading "+" as the start of a formula.
-        ws.append_rows(rows, value_input_option="RAW")
+        # insert_data_option="OVERWRITE" so new rows fill existing empty
+        # cells instead of being inserted -- inserted rows inherit
+        # formatting (like bold) from the row directly above them.
+        ws.append_rows(rows, value_input_option="RAW", insert_data_option="OVERWRITE")
+        last_col = chr(ord("A") + len(RAW_COLUMNS) - 1)
+        start_row = existing_row_count + 1
+        end_row = existing_row_count + len(rows)
+        ws.format(f"A{start_row}:{last_col}{end_row}", {"textFormat": {"bold": False}})
     print(f"Pushed {len(rows)} rows to '{RAW_WORKSHEET}'")
 
 
