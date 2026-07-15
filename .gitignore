@@ -3,3 +3,4 @@ __pycache__
 creds.json
 **/*.csv
 businesses.csv
+.env

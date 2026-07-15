@@ -33,6 +33,15 @@ def push_raw(csv_path: str):
         # look like a second header.
         ws.format(f"A2:{last_col}2", {"textFormat": {"bold": False}})
 
+    # Skip emails already sitting in Raw_Leads -- important for repeated/
+    # daily runs, since scraper_emails.py accumulates results across runs
+    # (cleaned.csv can contain leads pushed on a previous day). Without
+    # this, re-running push_raw.py would duplicate every prior lead.
+    existing_emails = set(e.lower() for e in ws.col_values(RAW_COLUMNS.index("email") + 1)[1:])  # skip header
+    before = len(df)
+    df = df[~df["email"].str.lower().isin(existing_emails)]
+    skipped = before - len(df)
+
     rows = df[RAW_COLUMNS].fillna("").values.tolist()
     phone_idx = RAW_COLUMNS.index("phone")
     for row in rows:
@@ -52,7 +61,7 @@ def push_raw(csv_path: str):
         start_row = existing_row_count + 1
         end_row = existing_row_count + len(rows)
         ws.format(f"A{start_row}:{last_col}{end_row}", {"textFormat": {"bold": False}})
-    print(f"Pushed {len(rows)} rows to '{RAW_WORKSHEET}'")
+    print(f"Pushed {len(rows)} new rows to '{RAW_WORKSHEET}' (skipped {skipped} already there)")
 
 
 if __name__ == "__main__":

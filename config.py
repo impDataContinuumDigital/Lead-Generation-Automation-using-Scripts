@@ -69,6 +69,42 @@ SEARCH_LOCATIONS = [
     "Toronto, ON",
 ]
 
+""" 
+Canada -
+
+Toronto, ON
+Vancouver, BC
+Calgary, AB
+Ottawa, ON
+Mississauga, ON
+Montreal, QC
+
+US — Sun Belt (heavy construction growth)
+
+Austin, TX
+Dallas, TX
+Houston, TX
+San Antonio, TX
+Phoenix, AZ
+Atlanta, GA
+Charlotte, NC
+Nashville, TN
+Tampa, FL
+Orlando, FL
+Miami, FL
+
+US — Major metros (dense property management market)
+
+New York, NY
+Chicago, IL
+Los Angeles, CA
+Denver, CO
+Seattle, WA
+
+"""
+
+
+
 MAPS_RESULTS_PER_QUERY = 20   # roughly how many listings to pull per search
 MAPS_HEADLESS = True          # set False to watch the browser while debugging
 
